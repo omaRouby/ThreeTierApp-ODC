@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     image: project_backend
     ports:
-      - "8080:8080"
+      - "8080:8000"
     networks:
       - backend-network
     secrets:
@@ -15,7 +15,8 @@ services:
     environment:
       DB_HOST: database
       DB_PASSWORD_FILE: /run/secrets/db-password
-
+    depends_on:
+      - database 
   proxy:
     build:
       context: ./proxy
