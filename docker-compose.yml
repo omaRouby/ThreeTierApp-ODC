@@ -13,6 +13,7 @@ services:
     secrets:
       - db-password
     environment:
+      DB_HOST: database
       DB_PASSWORD_FILE: /run/secrets/db-password
 
   proxy:
