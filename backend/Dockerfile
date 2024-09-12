@@ -30,6 +30,6 @@ RUN chmod +x /backend
 
 # Set the working directory
 WORKDIR /
-
+EXPOSE 8000
 # Command to run the binary
 CMD ["/backend"]
