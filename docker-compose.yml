@@ -1,56 +1,38 @@
-version: '3.8'
-
 services:
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    image: project_backend
-    ports:
-      - "8080:8000"
-    networks:
-      - backend-network
-      - common-network
-    secrets:
-      - db-password
-    environment:
-      DB_HOST: database
-      DB_PASSWORD_FILE: /run/secrets/db-password
-    depends_on:
-      - database 
-
   proxy:
-    build:
-      context: ./proxy
-      dockerfile: Dockerfile
-    image: project_proxy
+    build: nginx/
+    image: nginx_proxy
     ports:
+      - "80:80"   
       - "443:443"
+    volumes:
+      - /etc/nginx/ssl/:/etc/nginx/ssl/
     depends_on:
       - backend
-    networks:
-      - proxy-network
-      - common-network
-    volumes:
-      - ./proxy/ssl:/etc/nginx/ssl
 
-  database:
-    image: mysql:8.4
+  backend:
+    build: .
+    image: backend
+    expose:
+      - "8000"
+    depends_on:
+      - db
+    secrets:
+      - db-password
+
+  db:
+    image: mysql:8.0
     environment:
-      MYSQL_ROOT_PASSWORD: example
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db-password
       MYSQL_DATABASE: example
-    networks:
-      - backend-network
-      - common-network
+    volumes:
+      - db_data:/var/lib/mysql
+    secrets:
+      - db-password
 
 secrets:
   db-password:
-    file: ./secrets/db-password
+    file: ./db-password.txt
 
-networks:
-  backend-network:
-    driver: bridge
-  proxy-network:
-    driver: bridge
-  common-network:
-    driver: bridge
+volumes:
+  db_data:
