@@ -1,6 +1,6 @@
 services:
   proxy:
-    build: nginx/
+    build: proxy/
     image: nginx_proxy
     ports:
       - "80:80"   
@@ -11,7 +11,7 @@ services:
       - backend
 
   backend:
-    build: .
+    build: backend/
     image: backend
     expose:
       - "8000"
