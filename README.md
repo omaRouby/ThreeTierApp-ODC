@@ -8,7 +8,7 @@ This project demonstrates a Three-Tier architecture application using Docker and
 
 ### Architecture
 
-![Three-Tier App Architecture](image-placeholder.png)
+![Three-Tier App Architecture](https://github.com/omaRouby/ThreeTierApp-ODC/blob/main/go-page.png)
 
 ### Project Structure
 
