@@ -1,35 +1,21 @@
-# Stage 1: Build the Go binary
-FROM golang:1.18 AS builder
+FROM golang:1.19 AS build-stage
 
-# Set the Current Working Directory inside the container
 WORKDIR /app
 
-# Copy go mod and sum files
 COPY go.mod go.sum ./
-
-# Download dependencies
 RUN go mod download
 
-# Copy the source code into the container
-COPY . .
+COPY *.go ./
 
-# Build the Go binary with CGO_ENABLED=0 for static linking
-RUN CGO_ENABLED=0 go build -o backend .
+RUN CGO_ENABLED=0 GOOS=linux go build -o /backend
 
-# Stage 2: Create a small image
-FROM alpine:latest  
+FROM build-stage AS run-test-stage
+RUN go test -v ./...
 
-# Install required packages
-RUN apk --no-cache add ca-certificates
+FROM alpine AS build-release-stage
 
-# Copy the binary from the builder stage
-COPY --from=builder /app/backend /backend
-
-# Make sure the binary is executable
-RUN chmod +x /backend
-
-# Set the working directory
 WORKDIR /
+
+COPY --from=build-stage /backend /backend
+
 EXPOSE 8000
-# Command to run the binary
-CMD ["/backend"]
